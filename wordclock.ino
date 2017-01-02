@@ -34,7 +34,7 @@ void setup() {
 
   if (!RTC.isrunning()) {
     // If necessary, set the clock to the time this sketch was compiled.
-    RTC.adjust(DateTime(__DATE__, __TIME__));
+    RTC.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 
   setTimer1Interrupt2Hz();
