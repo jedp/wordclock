@@ -12,6 +12,7 @@ RTC_DS1307 RTC;
 // Every second, we will blink a light on and off.
 bool blinking = false;
 int ticks = 0;
+int debounceTick = ticks;
 
 // The current matrix of lights on the display.
 byte pattern[8];
@@ -28,6 +29,10 @@ void setup() {
 
   // Enable pin governs both 4501s.
   pinMode(ENABLE, OUTPUT);
+
+  // Buttons to manually set time.
+  pinMode(INCR_HORA, INPUT_PULLUP);
+  pinMode(INCR_CINCO_MINUTOS, INPUT_PULLUP);
 
   Wire.begin();
   RTC.begin();
@@ -48,6 +53,8 @@ void loop() {
   blinkSeconds();
 
   displayPattern();
+
+  checkForClockSet();
 
   // Check the RTC every 21 seconds. (Ticks are at 2Hz frequency.)
   if (ticks > 42) {
@@ -122,6 +129,26 @@ void updateClockPattern() {
     } else {
       pattern[i] = HORAS[hora][i] | CONJ[conj][i] | MINUTOS[minuto][i];
     }
+  }
+}
+
+/** Respond to button presses to set the clock. */
+void checkForClockSet() {
+  // Half-second debounce.
+  if (debounceTick == ticks) return;
+
+  if (digitalRead(INCR_HORA) == LOW) {
+    // Press INCR_HORA button to increment by 3600s (one hour).
+    RTC.adjust(RTC.now() + 3600);
+    updateClockPattern();
+    debounceTick = ticks;
+  }
+
+  if (digitalRead(INCR_CINCO_MINUTOS) == LOW) {
+    // Press INCR_CINCO_MINUTOS button to increment by 300s (5 min).
+    RTC.adjust(RTC.now() + 300);
+    updateClockPattern();
+    debounceTick = ticks;
   }
 }
 

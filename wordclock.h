@@ -121,3 +121,7 @@ const byte MINUTOS[][8] = {
 // DS1037 SDA <-> A4 (Arduino)
 // DS1037 SCL <-> A5
 
+// The clock can be set manually.
+#define INCR_HORA 8
+#define INCR_CINCO_MINUTOS 9
+
